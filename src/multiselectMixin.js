@@ -576,8 +576,15 @@ export default {
      * @param {Object} group to validated selected values against
      */
     wholeGroupSelected (group) {
-      return group[this.groupValues].every(option => this.isSelected(option) || this.isOptionDisabled(option)
-      )
+      let valueKeysAsSet = new Set(this.valueKeys)
+      return group[this.groupValues].every(option => {
+        const opt = this.trackBy
+          ? option[this.trackBy]
+          : option
+        let isSelected = valueKeysAsSet.has(opt)
+        let isOptionDisabled = !!option.$isDisabled
+        return isSelected || isOptionDisabled
+      })
     },
     /**
      * Helper to identify if all values in a group are disabled
