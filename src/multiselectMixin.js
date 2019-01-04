@@ -560,7 +560,7 @@ export default {
 
         this.$emit('input', newValue, this.id)
       } else {
-        const optionsToAdd = group[this.groupValues].filter(not(this.isOptionDisabled || this.isSelected))
+        const optionsToAdd = group[this.groupValues].filter(option => !(this.isOptionDisabled(option) || this.isSelected(option)))
 
         this.$emit('select', optionsToAdd, this.id)
         this.$emit(
@@ -576,14 +576,10 @@ export default {
      * @param {Object} group to validated selected values against
      */
     wholeGroupSelected (group) {
-      let valueKeysAsSet = new Set(this.valueKeys)
+      const valueKeysAsSet = new Set(this.valueKeys)
       return group[this.groupValues].every(option => {
-        const opt = this.trackBy
-          ? option[this.trackBy]
-          : option
-        let isSelected = valueKeysAsSet.has(opt)
-        let isOptionDisabled = !!option.$isDisabled
-        return isSelected || isOptionDisabled
+        const opt = this.trackBy ? option[this.trackBy] : option
+        return valueKeysAsSet.has(opt) || this.isOptionDisabled(option)
       })
     },
     /**
